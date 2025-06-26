@@ -34,10 +34,10 @@ async function run() {
     const db = client.db('parcelDB');
     const parcelCollection = db.collection('parcels')
 
-    app.get('/parcels', async(req,res)=>{
-        const parcels = await parcelCollection.find().toArray();
-        res.send(parcels)
-    })
+    // app.get('/parcels', async(req,res)=>{
+    //     const parcels = await parcelCollection.find().toArray();
+    //     res.send(parcels)
+    // })
 
      // parcels api
         // GET: All parcels OR parcels by user (created_by), sorted by latest
@@ -49,6 +49,7 @@ async function run() {
                 const options = {
                     sort: { createdAt: -1 }, // Newest first
                 };
+                console.log(query)
 
                 const parcels = await parcelCollection.find(query, options).toArray();
                 res.send(parcels);
