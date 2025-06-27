@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 dotenv.config();
 
+const stripe = require('stripe')(process.env.PAYMENT_GATEWAY_KEY)
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -101,6 +102,21 @@ async function run() {
             } catch (error) {
                 console.error('Error fetching parcel:', error);
                 res.status(500).send({ message: 'Failed to fetch parcel' });
+            }
+        });
+
+         app.post('/create-payment-intent', async (req, res) => {
+            const amountInCents = req.body.amountInCents
+            try {
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: amountInCents, // Amount in cents
+                    currency: 'usd',
+                    payment_method_types: ['card'],
+                });
+
+                res.json({ clientSecret: paymentIntent.client_secret });
+            } catch (error) {
+                res.status(500).json({ error: error.message });
             }
         });
 
